@@ -276,15 +276,18 @@ It is possible to force the import of files which weren't downloaded using the
         Simple lazy identity map for (country_code2, region_id,
         subregion_id)->subregion
         """
-        country_id = self._get_country_id(country_code2)
-        if region_id not in self._region_codes[country_id]:
-            self._region_codes[country_id][region_id] = Region.objects.get(
-                country_id=country_id, geoname_code=region_id).pk
-        if subregion_id not in self._subregion_codes[country_id]:
-            self._subregion_codes[country_id][subregion_id] = \
-                SubRegion.objects.get(
-                country_id=country_id, geoname_code=subregion_id).pk
-        return self._subregion_codes[country_id][subregion_id]
+        try:
+            country_id = self._get_country_id(country_code2)
+            if region_id not in self._region_codes[country_id]:
+                self._region_codes[country_id][region_id] = Region.objects.get(
+                    country_id=country_id, geoname_code=region_id).pk
+            if subregion_id not in self._subregion_codes[country_id]:
+                self._subregion_codes[country_id][subregion_id] = \
+                    SubRegion.objects.get(
+                    country_id=country_id, geoname_code=subregion_id).pk
+            return self._subregion_codes[country_id][subregion_id]
+        except Exception as e:
+            return None
 
     def country_import(self, items):
         try:
